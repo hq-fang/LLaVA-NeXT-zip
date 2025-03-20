@@ -1,0 +1,4 @@
+2024-10-08 13:34:23 | ERROR | stderr | Traceback (most recent call last):
+2024-10-08 13:34:23 | ERROR | stderr |   File "/net/nfs2.prior/jiafei/unified_VLM/LLaVA-NeXT/llava/serve/gradio_web_server.py", line 20, in <module>
+2024-10-08 13:34:23 | ERROR | stderr |     no_change_btn = gr.Button.update()
+2024-10-08 13:34:23 | ERROR | stderr | AttributeError: type object 'Button' has no attribute 'update'
