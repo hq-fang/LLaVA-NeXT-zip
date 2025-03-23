@@ -1,0 +1,42 @@
+version: v2
+description: llava_ov_7b_ft_distill_stage2_action_token
+budget: ai2/prior
+tasks:
+- name: full-train
+  replicas: 1
+  image:
+    beaker: jiafeid/llava-docker
+  command: ['/bin/bash', '-c']
+  arguments:
+  - >-
+    nvidia-smi &&
+    cd /data/input/jiafei/GroundedVLA/LLaVA-NeXT &&
+    bash /data/input/jiafei/GroundedVLA/LLaVA-NeXT/scripts/train/finetune_ov_distill_stage2_actiontoken.sh
+    
+  datasets:
+  - mountPath: /data/input
+    source:
+      weka: prior-default
+  result:
+    path: /data/results
+  envVars:
+  - name: ALLENACT_DEBUG_VST_TIMEOUT
+    value: 2000
+  - name: ALLENACT_DEBUG
+    value: true
+  - name: NCCL_SOCKET_IFNAME
+    value: ib
+  - name: NCCL_TIMEOUT
+    value: 36000000
+  resources:
+    gpuCount: 8
+    sharedMemory: 1000GiB
+  context:
+    priority: high
+    preemptible: true
+  constraints:
+    cluster: [
+      ai2/jupiter-cirrascale-2
+  ]
+  hostNetworking: true
+  leaderSelection: true
