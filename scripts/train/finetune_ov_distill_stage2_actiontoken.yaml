@@ -9,16 +9,37 @@ tasks:
   command: ['/bin/bash', '-c']
   arguments:
   - >-
-    nvidia-smi &&
+    nvidia-smi && mkdir -p /data/input/jiafei/GroundedVLA &&
+    mkdir -p /data/input/jiafei/GroundedVLA/checkpoint &&
+    cd /data/input/jiafei/GroundedVLA &&
+    git clone https://github.com/hq-fang/LLaVA-NeXT-zip.git LLaVA-NeXT &&
     cd /data/input/jiafei/GroundedVLA/LLaVA-NeXT &&
+    pip install --upgrade pip &&
+    pip install -e ".[train]" &&
+    pip install pynvml==11.5.0 &&
+    pip install accelerate==0.29.3 &&
+    pip install flash-attn==2.5.7 &&
     bash /data/input/jiafei/GroundedVLA/LLaVA-NeXT/scripts/train/finetune_ov_distill_stage2_actiontoken.sh
     
   datasets:
-  - mountPath: /data/input
+  - mountPath: /data/input/jiafei/datasets/Full_OXE/json/mar18-distill
     source:
-      weka: prior-default
+      beaker: jiafeid/oxe_json
+  - mountPath: /data/input/jiafei/datasets/Full_OXE/pose/bc_z
+    source:
+      beaker: jiafeid/oxe_bc_z
+  - mountPath: /data/input/jiafei/datasets/Full_OXE/pose/bridge_dataset
+    source:
+      beaker: jiafeid/oxe_bridge_dataset
+  - mountPath: /data/input/jiafei/datasets/Full_OXE/pose/fractal20220817_data
+    source:
+      beaker: jiafeid/oxe_fractal20220817_data
+  - mountPath: /data/input/jiafei/datasets/665k_llava
+    source:
+      beaker: jiafeid/llava_665k
+
   result:
-    path: /data/results
+    path: /data/input/jiafei/GroundedVLA/checkpoint
   envVars:
   - name: ALLENACT_DEBUG_VST_TIMEOUT
     value: 2000
@@ -36,7 +57,7 @@ tasks:
     preemptible: true
   constraints:
     cluster: [
-      ai2/jupiter-cirrascale-2
+      ai2/augusta-google-1
   ]
   hostNetworking: true
   leaderSelection: true
