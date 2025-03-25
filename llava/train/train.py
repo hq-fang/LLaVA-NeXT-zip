@@ -1096,6 +1096,7 @@ class LazySupervisedDataset(Dataset):
             remote_path = f"{image_folder.rstrip('/')}/{image_file.lstrip('/')}"
             # Open the image from the remote bucket using fsspec
             with fsspec.open(remote_path, "rb") as f:
+                print(remote_path)
                 image = Image.open(f).convert("RGB")
         except Exception as exn:
             print(f"Failed to open image {image_file} from {remote_path}. Exception:", exn)
