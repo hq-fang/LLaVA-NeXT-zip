@@ -86,8 +86,8 @@ ACCELERATE_CPU_AFFINITY=1 WANDB_MODE=offline torchrun --nproc_per_node="${NUM_GP
     --model_name_or_path $PREV_STAGE_CHECKPOINT \
     --version $PROMPT_VERSION \
     --data_path /data/input/jiafei/GroundedVLA/LLaVA-NeXT/scripts/train/onevision_distill_training_ak_a100.yaml \
-    --image_folder /data/input/jiafei  \
-    --video_folder /data/input/jiafei/datasets \
+    --image_folder gs://vision-jiafeid  \
+    --video_folder gs://vision-jiafeid \
     --mm_tunable_parts="mm_vision_tower,mm_mlp_adapter,mm_language_model" \
     --mm_vision_tower_lr=2e-6 \
     --vision_tower ${VISION_MODEL_VERSION} \
