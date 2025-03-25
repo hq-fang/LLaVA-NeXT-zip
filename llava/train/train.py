@@ -54,6 +54,8 @@ from llava.model import *
 from llava.mm_utils import process_highres_image, process_anyres_image, process_highres_image_crop_split, tokenizer_image_token
 from llava.utils import rank0_print, process_video_with_pyav, process_video_with_decord
 from llava.model.language_model.llava_qwen import LlavaQwenForCausalLM
+import os
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/data/input/jiafei/GroundedVLA/LLaVA-NeXT/gcloud/application_default_credentials.json"
 
 torch.multiprocessing.set_sharing_strategy("file_system")
 
@@ -1019,7 +1021,8 @@ class LazySupervisedDataset(Dataset):
                     elif json_path.endswith(".json"):
                         # with open(json_path, "r") as json_file:
                         #     cur_data_dict = json.load(json_file)
-                        with fsspec.open(json_path, "r") as json_file:
+                        # with fsspec.open(json_path, "r") as json_file:
+                        with fsspec.open(json_path, "r", token="google_default") as json_file:
                             cur_data_dict = json.load(json_file)
                     else:
                         raise ValueError(f"Unsupported file type: {json_path}")
@@ -1096,9 +1099,9 @@ class LazySupervisedDataset(Dataset):
             remote_path = f"{image_folder.rstrip('/')}/{image_file.lstrip('/')}"
             # Open the image from the remote bucket using fsspec
             print(remote_path)
-            with fsspec.open(remote_path, "rb") as f:
-                
+            with fsspec.open(remote_path, "rb", token="google_default") as f:
                 image = Image.open(f).convert("RGB")
+
         except Exception as exn:
             print(f"Failed to open image {image_file} from {remote_path}. Exception:", exn)
             raise exn
