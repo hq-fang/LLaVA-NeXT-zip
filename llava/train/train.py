@@ -38,6 +38,11 @@ import transformers
 import tokenizers
 import deepspeed
 import PIL
+# For file system access (local and remote)
+import fsspec
+
+# For Google Cloud Storage (if using GCS-specific helpers)
+from google.cloud import storage
 
 from transformers import AutoConfig
 from torch.utils.data import Dataset

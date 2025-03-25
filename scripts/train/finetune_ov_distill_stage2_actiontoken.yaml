@@ -19,6 +19,7 @@ tasks:
     pip install pynvml==11.5.0 &&
     pip install accelerate==0.29.3 &&
     pip install flash-attn==2.5.7 &&
+    pip install fsspec google-cloud-storage &&
     bash /data/input/jiafei/GroundedVLA/LLaVA-NeXT/scripts/train/finetune_ov_distill_stage2_actiontoken.sh
     
   datasets:
