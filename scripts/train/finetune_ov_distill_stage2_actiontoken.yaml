@@ -20,6 +20,7 @@ tasks:
     pip install accelerate==0.29.3 &&
     pip install flash-attn==2.5.7 &&
     pip install fsspec google-cloud-storage &&
+    pip install gcsfs &&
     bash ./scripts/train/finetune_ov_distill_stage2_actiontoken.sh
     
   # datasets:
