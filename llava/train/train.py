@@ -1012,7 +1012,9 @@ class LazySupervisedDataset(Dataset):
                             for line in json_file:
                                 cur_data_dict.append(json.loads(line.strip()))
                     elif json_path.endswith(".json"):
-                        with open(json_path, "r") as json_file:
+                        # with open(json_path, "r") as json_file:
+                        #     cur_data_dict = json.load(json_file)
+                        with fsspec.open(json_path, "r") as json_file:
                             cur_data_dict = json.load(json_file)
                     else:
                         raise ValueError(f"Unsupported file type: {json_path}")
@@ -1072,13 +1074,26 @@ class LazySupervisedDataset(Dataset):
                 length_list.append(-cur_len)
         return length_list
 
+    # def process_image(self, image_file, overwrite_image_aspect_ratio=None, line_mod=None):
+    #     image_folder = self.data_args.image_folder
+    #     processor = self.data_args.image_processor
+    #     try:
+    #         image = Image.open(os.path.join(image_folder, image_file)).convert("RGB")
+    #     except Exception as exn:
+    #         print(f"Failed to open image {image_file}. Exception:", exn)
+    #         raise exn
+    
     def process_image(self, image_file, overwrite_image_aspect_ratio=None, line_mod=None):
-        image_folder = self.data_args.image_folder
+        image_folder = self.data_args.image_folder  # e.g., "gs://vision-jiafeid/path/to/images"
         processor = self.data_args.image_processor
         try:
-            image = Image.open(os.path.join(image_folder, image_file)).convert("RGB")
+            # Construct the full remote path
+            remote_path = f"{image_folder.rstrip('/')}/{image_file.lstrip('/')}"
+            # Open the image from the remote bucket using fsspec
+            with fsspec.open(remote_path, "rb") as f:
+                image = Image.open(f).convert("RGB")
         except Exception as exn:
-            print(f"Failed to open image {image_file}. Exception:", exn)
+            print(f"Failed to open image {image_file} from {remote_path}. Exception:", exn)
             raise exn
 
 
