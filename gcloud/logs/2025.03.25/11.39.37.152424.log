@@ -1,0 +1,8 @@
+2025-03-25 11:39:37,154 DEBUG    root            Loaded Command Group: ['gcloud', 'config']
+2025-03-25 11:39:37,157 DEBUG    root            Loaded Command Group: ['gcloud', 'config', 'get']
+2025-03-25 11:39:37,159 DEBUG    root            Running [gcloud.config.get] with arguments: [SECTION/PROPERTY: "project"]
+2025-03-25 11:39:37,159 DEBUG    root            Chosen display Format:value(.)
+2025-03-25 11:39:37,160 INFO     root            Display format: "value(.)"
+2025-03-25 11:39:37,160 INFO     ___FILE_ONLY___ ai2-prior-satlas
+
+2025-03-25 11:39:37,160 DEBUG    root            SDK update checks are disabled.
