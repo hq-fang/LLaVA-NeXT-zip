@@ -28,7 +28,7 @@ export PORT=29500
 #ADDR="127.0.0.1"
 #PORT="29501"
 #PORT=$(python -c 'import socket; s=socket.socket(); s.bind(("", 0)); print(s.getsockname()[1]); s.close()')
-NNODES=32
+NNODES=24
 NUM_GPUS=8
 export CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7
 export LD_LIBRARY_PATH="/var/lib/tcpxo/lib64:${LD_LIBRARY_PATH}"
