@@ -3,7 +3,7 @@ description: jason-llava_depth_actiontoken
 budget: ai2/prior
 tasks:
 - name: full-train
-  replicas: 24
+  replicas: 32
   image:
     beaker: jiafeid/llava-docker
   command: ['/bin/bash', '-c']
@@ -21,6 +21,7 @@ tasks:
     pip install flash-attn==2.5.7 &&
     pip install fsspec google-cloud-storage &&
     pip install gcsfs &&
+    mkdir /data/input/jiafei/GroundedVLA/checkpoint/mar25_full_stage2_actiontoken &&
     bash ./scripts/train/finetune_ov_distill_stage2_actiontoken.sh &&
     gsutil -m cp -r /data/input/jiafei/GroundedVLA/checkpoint/mar25_full_stage2_actiontoken gs://vision-jiafeid/checkpoint/mar25_full_stage2_actiontoken
   
@@ -39,7 +40,7 @@ tasks:
   #     beaker: jiafeid/oxe_fractal20220817_data
 
   result:
-    path: /data/input/jiafei/GroundedVLA/checkpoint/mar25_full_stage2_actiontoken
+    path: /output
   envVars:
   - name: ALLENACT_DEBUG_VST_TIMEOUT
     value: 2000
@@ -105,7 +106,7 @@ tasks:
     value: "1"
   resources:
     gpuCount: 8
-    sharedMemory: 1000GiB
+    sharedMemory: 5000GiB
   context:
     priority: high
     preemptible: true
