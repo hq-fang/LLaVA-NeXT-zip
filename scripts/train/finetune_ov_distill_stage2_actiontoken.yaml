@@ -1,5 +1,5 @@
 version: v2
-description: llava_ov_7b_ft_distill_stage2_action_token
+description: jason-llava_depth_actiontoken
 budget: ai2/prior
 tasks:
 - name: full-train
@@ -22,7 +22,7 @@ tasks:
     pip install fsspec google-cloud-storage &&
     pip install gcsfs &&
     bash ./scripts/train/finetune_ov_distill_stage2_actiontoken.sh
-    gsutil -m -cp -r /data/input/jiafei/GroundedVLA/checkpoint/mar25_full_stage2_actiontoken gs://vision-jiafeid/checkpoint/mar25_full_stage2_actiontoken
+    gsutil -m cp -r /data/input/jiafei/GroundedVLA/checkpoint/mar25_full_stage2_actiontoken gs://vision-jiafeid/checkpoint/mar25_full_stage2_actiontoken
   # datasets:
   # - mountPath: /data/input/jiafei/datasets/Full_OXE/json/mar18-distill
   #   source:
@@ -114,3 +114,5 @@ tasks:
   ]
   hostNetworking: true
   leaderSelection: true
+
+
