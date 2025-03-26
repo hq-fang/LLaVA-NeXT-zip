@@ -29,7 +29,7 @@ ADDR="127.0.0.1"
 PORT="29501"
 #PORT=$(python -c 'import socket; s=socket.socket(); s.bind(("", 0)); print(s.getsockname()[1]); s.close()')
 NNODES=1
-NUM_GPUS=1
+NUM_GPUS=8
 export CUDA_VISIBLE_DEVICES=0
 export LD_LIBRARY_PATH="/var/lib/tcpxo/lib64:${LD_LIBRARY_PATH}"
 export NCCL_CROSS_NIC=0
@@ -85,7 +85,7 @@ ACCELERATE_CPU_AFFINITY=1 WANDB_MODE=offline torchrun --nproc_per_node="${NUM_GP
     --deepspeed /data/input/jiafei/GroundedVLA/LLaVA-NeXT/scripts/zero2.json \
     --model_name_or_path $PREV_STAGE_CHECKPOINT \
     --version $PROMPT_VERSION \
-    --data_path /data/input/jiafei/GroundedVLA/LLaVA-NeXT/scripts/train/onevision_distill_training_ak_a100.yaml \
+    --data_path /data/input/jiafei/GroundedVLA/LLaVA-NeXT-zip/scripts/train/onevision_distill_training_ak_a100_test.yaml \
     --image_folder gs://vision-jiafeid  \
     --video_folder gs://vision-jiafeid \
     --mm_tunable_parts="mm_vision_tower,mm_mlp_adapter,mm_language_model" \
@@ -101,7 +101,7 @@ ACCELERATE_CPU_AFFINITY=1 WANDB_MODE=offline torchrun --nproc_per_node="${NUM_GP
     --mm_patch_merge_type spatial_unpad \
     --bf16 True \
     --run_name $RUN_NAME \
-    --output_dir /data/input/jiafei/GroundedVLA/checkpoint/mar22_full_stage2_actiontoken \
+    --output_dir /data/input/jiafei/GroundedVLA/checkpoint/mar25_full_stage2_actiontoken_test \
     --num_train_epochs 3 \
     --per_device_train_batch_size 1 \
     --per_device_eval_batch_size 4 \

@@ -3709,6 +3709,23 @@ def train(attn_implementation=None):
     model.set_tokenizer(tokenizer)
 
     trainer = LLaVATrainer(model=model, tokenizer=tokenizer, args=training_args, **data_module)
+    import subprocess
+    from transformers import TrainerCallback
+
+    class GCSCheckpointCallback(TrainerCallback):
+        def __init__(self, local_dir: str, gcs_path: str):
+            self.local_dir = local_dir
+            self.gcs_path = gcs_path
+
+        def on_save(self, args, state, control, **kwargs):
+            rank0_print(f"Uploading checkpoint (step {state.global_step}) from {self.local_dir} to {self.gcs_path}...")
+            subprocess.run(["gsutil", "-m", "cp", "-r", self.local_dir, self.gcs_path])
+            return control
+
+    # Compute the GCS output directory by replacing the local base path with the GCS bucket path.
+    # For example, replace "/data/input/jiafei/GroundedVLA" with "gs://vision-jiafeid"
+    gcs_output_dir = training_args.output_dir.replace("/data/input/jiafei/GroundedVLA", "gs://vision-jiafeid")
+    trainer.add_callback(GCSCheckpointCallback(local_dir=training_args.output_dir, gcs_path=gcs_output_dir))
 
     if list(pathlib.Path(training_args.output_dir).glob("checkpoint-*")):
         trainer.train(resume_from_checkpoint=True)
@@ -3717,6 +3734,8 @@ def train(attn_implementation=None):
     trainer.save_state()
 
     model.config.use_cache = True
+
+
 
     if training_args.lora_enable:
         state_dict = get_peft_state_maybe_zero_3(model.named_parameters(), training_args.lora_bias)
