@@ -28,7 +28,7 @@ export PORT=29500
 #ADDR="127.0.0.1"
 #PORT="29501"
 #PORT=$(python -c 'import socket; s=socket.socket(); s.bind(("", 0)); print(s.getsockname()[1]); s.close()')
-NNODES=24
+NNODES=32
 NUM_GPUS=8
 export CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7
 export LD_LIBRARY_PATH="/var/lib/tcpxo/lib64:${LD_LIBRARY_PATH}"
@@ -63,10 +63,10 @@ echo "NNODES: ${NNODES}"
 echo "RANK: ${RANK}"
 echo "ADDR: ${ADDR}"
 echo "PORT: ${PORT}"
-export NUMACTL_CMD=""
-export NCCL_PROTO=Simple,LL128
-export NCCL_TUNER_CONFIG_PATH=/var/lib/tcpxo/lib64/a3plus_tuner_config_ll128.textproto
-export NCCL_SHIMNET_GUEST_CONFIG_CHECKER_CONFIG_FILE=/var/lib/tcpxo/lib64/a3plus_guest_config_ll128.textproto
+# export NUMACTL_CMD=""
+# export NCCL_PROTO=Simple,LL128
+# export NCCL_TUNER_CONFIG_PATH=/var/lib/tcpxo/lib64/a3plus_tuner_config_ll128.textproto
+# export NCCL_SHIMNET_GUEST_CONFIG_CHECKER_CONFIG_FILE=/var/lib/tcpxo/lib64/a3plus_guest_config_ll128.textproto
 # Stage 2
 PROMPT_VERSION="qwen_1_5"
 RUN_NAME="llava-onevision-${VISION_MODEL_VERSION_CLEAN}-${LLM_VERSION_CLEAN}-ov_stage_am9" 
