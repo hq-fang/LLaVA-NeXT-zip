@@ -2165,7 +2165,7 @@ def safe_save_model_for_hf_trainer(trainer: transformers.Trainer, output_dir: st
         return
 
     if trainer.deepspeed:
-        trainer.x(output_dir)
+        trainer.save_model(output_dir)
         return
 
     state_dict = trainer.model.state_dict()
@@ -2908,8 +2908,9 @@ class LazySupervisedDataset(Dataset):
                 cur_data_dict = json.load(file)
                 rank0_print(f"Loaded {len(cur_data_dict)} samples from {data_path}")
                 self.list_data_dict.extend(cur_data_dict)
-
+        
         rank0_print(f"Loaded {len(self.list_data_dict)} samples from {data_path}")
+        rank0_print(f"{self.list_data_dict}")
         rank0_print("Formatting inputs...Skip in lazy mode")
         self.tokenizer = tokenizer
         self.data_args = data_args
@@ -2957,7 +2958,7 @@ class LazySupervisedDataset(Dataset):
             
             # with fsspec.open(remote_path, "r") as f:
                 
-            print(image_path)
+            # print(image_path)
             if image_path.startswith("gs://"):
                 image_bytes = get_bytes_range(image_path, 0, None)
                 with Image.open(BytesIO(image_bytes)) as image:
