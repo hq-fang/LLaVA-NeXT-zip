@@ -39,7 +39,7 @@ tasks:
   #     beaker: jiafeid/oxe_fractal20220817_data
 
   result:
-    path: /results
+    path: /data/input/jiafei/GroundedVLA/checkpoint/mar25_full_stage2_actiontoken
   envVars:
   - name: ALLENACT_DEBUG_VST_TIMEOUT
     value: 2000
