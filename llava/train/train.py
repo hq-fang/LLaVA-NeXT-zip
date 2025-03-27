@@ -3712,14 +3712,15 @@ def train(attn_implementation=None):
     import subprocess
     from transformers import TrainerCallback
     import os 
+        
     class GCSCheckpointCallback(TrainerCallback):
         def __init__(self, local_dir: str, gcs_path: str):
             self.local_dir = local_dir
             self.gcs_path = gcs_path
 
         def on_save(self, args, state, control, **kwargs):
+            # Only run on the main process.
             if getattr(args, "local_rank", 0) in [0, -1]:
-                import os
                 if os.path.isdir(self.local_dir) and os.listdir(self.local_dir):
                     rank0_print(f"Uploading checkpoint (step {state.global_step}) from {self.local_dir} to {self.gcs_path}...")
                     try:
@@ -3730,10 +3731,11 @@ def train(attn_implementation=None):
                     rank0_print(f"Checkpoint directory {self.local_dir} does not exist or is empty. Skipping upload.")
             return control
 
-    # Compute the GCS output directory by replacing the local base path with the GCS bucket path.
-    # For example, replace "/data/input/jiafei/GroundedVLA" with "gs://vision-jiafeid"
+    # Compute the GCS output directory by replacing the local base path.
     gcs_output_dir = training_args.output_dir.replace("/data/input/jiafei/GroundedVLA", "gs://vision-jiafeid")
-    if getattr(training_args, "local_rank", 0) in [0, -1]:
+
+    # Add the callback only if this process is the main one.
+    if os.environ.get("RANK", "0") == "0":
         trainer.add_callback(GCSCheckpointCallback(local_dir=training_args.output_dir, gcs_path=gcs_output_dir))
     # --- End callback addition ---
     if list(pathlib.Path(training_args.output_dir).glob("checkpoint-*")):
