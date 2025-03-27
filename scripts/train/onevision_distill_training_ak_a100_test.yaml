@@ -1,18 +1,18 @@
 datasets:
   - json_path: gs://vision-jiafeid/json/llava_v1_5_mix665k.json
-    sampling_strategy: "random:100%"
+    sampling_strategy: "random:100"
   - json_path: gs://vision-jiafeid/json/train_annealing_data.json
-    sampling_strategy: "random:100%"
+    sampling_strategy: "random:100"
   - json_path: gs://vision-jiafeid/json/depth-1m.json
-    sampling_strategy: "random:100%"
+    sampling_strategy: "random:100"
   - json_path: gs://vision-jiafeid/json/line-1m.json
-    sampling_strategy: "random:100%"
+    sampling_strategy: "random:100"
   - json_path: gs://vision-jiafeid/json/reasoning-depthsanity/fractal20220817_data.json
-    sampling_strategy: "random:100%"
+    sampling_strategy: "random:100"
   - json_path: gs://vision-jiafeid/json/reasoning-depthsanity/bridge_dataset.json
-    sampling_strategy: "random:100%"
+    sampling_strategy: "random:100"
   - json_path: gs://vision-jiafeid/json/reasoning-depthsanity/bc_z.json
-    sampling_strategy: "random:100%"
+    sampling_strategy: "random:100"
   # - json_path: gs://vision-jiafeid/json/reasoning-actiontoken/fractal20220817_data.json
   #   sampling_strategy: "random:100%"
   # - json_path: gs://vision-jiafeid/json/reasoning-actiontoken/bridge_dataset.json
