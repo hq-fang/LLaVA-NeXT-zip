@@ -3718,9 +3718,12 @@ def train(attn_implementation=None):
             self.gcs_path = gcs_path
 
         def on_save(self, args, state, control, **kwargs):
-            rank0_print(f"Uploading checkpoint (step {state.global_step}) from {self.local_dir} to {self.gcs_path}...")
-            subprocess.run(["gsutil", "-m", "cp", "-r", self.local_dir, self.gcs_path])
+            # Only run the upload on rank 0
+            if getattr(args, "local_rank", 0) == 0:
+                rank0_print(f"Uploading checkpoint (step {state.global_step}) from {self.local_dir} to {self.gcs_path}...")
+                subprocess.run(["gsutil", "-m", "cp", "-r", self.local_dir, self.gcs_path])
             return control
+
 
     # Compute the GCS output directory by replacing the local base path with the GCS bucket path.
     # For example, replace "/data/input/jiafei/GroundedVLA" with "gs://vision-jiafeid"
