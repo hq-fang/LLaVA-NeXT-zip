@@ -3713,23 +3713,63 @@ def train(attn_implementation=None):
     from transformers import TrainerCallback
     import os 
         
+
+
     class GCSCheckpointCallback(TrainerCallback):
         def __init__(self, local_dir: str, gcs_path: str):
             self.local_dir = local_dir
             self.gcs_path = gcs_path
 
         def on_save(self, args, state, control, **kwargs):
-            # Only run on the main process.
+            # Only run on main process.
             if getattr(args, "local_rank", 0) in [0, -1]:
                 if os.path.isdir(self.local_dir) and os.listdir(self.local_dir):
                     rank0_print(f"Uploading checkpoint (step {state.global_step}) from {self.local_dir} to {self.gcs_path}...")
                     try:
-                        subprocess.run(["gsutil", "-m", "cp", "-r", self.local_dir, self.gcs_path], check=True)
+                        # Upload the entire local checkpoint directory to remote.
+                        subprocess.run(
+                            ["gsutil", "-m", "cp", "-r", self.local_dir, self.gcs_path],
+                            check=True,
+                        )
+                        rank0_print("Upload successful.")
+
+                        # Now list remote contents and clean up older checkpoints.
+                        ls_result = subprocess.run(
+                            ["gsutil", "ls", self.gcs_path],
+                            capture_output=True,
+                            text=True,
+                            check=True,
+                        )
+                        remote_items = ls_result.stdout.strip().splitlines()
+                        # Filter for checkpoint directories. Assumes names contain "checkpoint-"
+                        checkpoint_dirs = [item for item in remote_items if "checkpoint-" in item]
+                        if checkpoint_dirs:
+                            # Sort by the numeric value in the directory name.
+                            def extract_num(remote_dir):
+                                # Expected format: .../checkpoint-<num>/
+                                base = remote_dir.rstrip("/").split("/")[-1]
+                                try:
+                                    return int(base.replace("checkpoint-", ""))
+                                except Exception:
+                                    return -1
+                            checkpoint_dirs = sorted(checkpoint_dirs, key=extract_num)
+                            latest = checkpoint_dirs[-1]
+                            # Delete all older checkpoints.
+                            to_delete = checkpoint_dirs[:-1]
+                            for d in to_delete:
+                                rank0_print(f"Deleting old remote checkpoint: {d}")
+                                subprocess.run(
+                                    ["gsutil", "-m", "rm", "-r", d],
+                                    check=True,
+                                )
+                        else:
+                            rank0_print("No checkpoint directories found on remote to clean up.")
                     except Exception as e:
-                        rank0_print(f"Error during GCS upload: {e}")
+                        rank0_print(f"Error during GCS upload or cleanup: {e}")
                 else:
                     rank0_print(f"Checkpoint directory {self.local_dir} does not exist or is empty. Skipping upload.")
             return control
+
 
     # Compute the GCS output directory by replacing the local base path.
     gcs_output_dir = training_args.output_dir.replace("/data/input/jiafei/GroundedVLA", "gs://vision-jiafeid")
