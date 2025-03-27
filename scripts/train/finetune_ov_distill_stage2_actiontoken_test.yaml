@@ -1,9 +1,9 @@
 version: v2
-description: jason-llava_depth_actiontoken
+description: jason-llava_depth_actiontoken_test
 budget: ai2/prior
 tasks:
 - name: full-train
-  replicas: 32
+  replicas: 1
   image:
     beaker: jiafeid/llava-docker
   command: ['/bin/bash', '-c']

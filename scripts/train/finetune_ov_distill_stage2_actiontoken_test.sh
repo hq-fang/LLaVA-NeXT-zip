@@ -21,16 +21,16 @@ VISION_MODEL_VERSION_CLEAN="${VISION_MODEL_VERSION//\//_}"
 BASE_RUN_NAME="llavanext-google_siglip-so400m-patch14-384-Qwen_Qwen2-7B-Instruct-mlp2x_gelu-pretrain_blip558k_plain"
 echo "BASE_RUN_NAME: ${BASE_RUN_NAME}"
 
-# export RANK=$BEAKER_REPLICA_RANK
-# export ADDR=$BEAKER_LEADER_REPLICA_HOSTNAME
-# export PORT=29500
-RANK=0
-ADDR="127.0.0.1"
-PORT="29501"
+export RANK=$BEAKER_REPLICA_RANK
+export ADDR=$BEAKER_LEADER_REPLICA_HOSTNAME
+export PORT=29500
+#RANK=0
+#ADDR="127.0.0.1"
+#PORT="29501"
 #PORT=$(python -c 'import socket; s=socket.socket(); s.bind(("", 0)); print(s.getsockname()[1]); s.close()')
 NNODES=1
 NUM_GPUS=8
-export CUDA_VISIBLE_DEVICES=0
+export CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7
 export LD_LIBRARY_PATH="/var/lib/tcpxo/lib64:${LD_LIBRARY_PATH}"
 export NCCL_CROSS_NIC=0
 export NCCL_ALGO=Ring,Tree
@@ -43,7 +43,7 @@ export NCCL_FASTRAK_NUM_FLOWS=2
 export NCCL_FASTRAK_ENABLE_CONTROL_CHANNEL=0
 export NCCL_BUFFSIZE=8388608
 export NCCL_FASTRAK_USE_SNAP=1
-export CUDA_VISIBLE_DEVICES=0
+export CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7
 export NCCL_NET_GDR_LEVEL=PIX
 export NCCL_FASTRAK_ENABLE_HOTPATH_LOGGING=0
 export NCCL_TUNER_PLUGIN=libnccl-tuner.so
@@ -63,10 +63,10 @@ echo "NNODES: ${NNODES}"
 echo "RANK: ${RANK}"
 echo "ADDR: ${ADDR}"
 echo "PORT: ${PORT}"
-export NUMACTL_CMD=""
-export NCCL_PROTO=Simple,LL128
-export NCCL_TUNER_CONFIG_PATH=/var/lib/tcpxo/lib64/a3plus_tuner_config_ll128.textproto
-export NCCL_SHIMNET_GUEST_CONFIG_CHECKER_CONFIG_FILE=/var/lib/tcpxo/lib64/a3plus_guest_config_ll128.textproto
+# export NUMACTL_CMD=""
+# export NCCL_PROTO=Simple,LL128
+# export NCCL_TUNER_CONFIG_PATH=/var/lib/tcpxo/lib64/a3plus_tuner_config_ll128.textproto
+# export NCCL_SHIMNET_GUEST_CONFIG_CHECKER_CONFIG_FILE=/var/lib/tcpxo/lib64/a3plus_guest_config_ll128.textproto
 # Stage 2
 PROMPT_VERSION="qwen_1_5"
 RUN_NAME="llava-onevision-${VISION_MODEL_VERSION_CLEAN}-${LLM_VERSION_CLEAN}-ov_stage_am9" 
@@ -85,7 +85,7 @@ ACCELERATE_CPU_AFFINITY=1 WANDB_MODE=offline torchrun --nproc_per_node="${NUM_GP
     --deepspeed /data/input/jiafei/GroundedVLA/LLaVA-NeXT/scripts/zero2.json \
     --model_name_or_path $PREV_STAGE_CHECKPOINT \
     --version $PROMPT_VERSION \
-    --data_path /data/input/jiafei/GroundedVLA/LLaVA-NeXT-zip/scripts/train/onevision_distill_training_ak_a100_test.yaml \
+    --data_path /data/input/jiafei/GroundedVLA/LLaVA-NeXT/scripts/train/onevision_distill_training_ak_a100_test.yaml \
     --image_folder gs://vision-jiafeid  \
     --video_folder gs://vision-jiafeid \
     --mm_tunable_parts="mm_vision_tower,mm_mlp_adapter,mm_language_model" \
@@ -102,15 +102,15 @@ ACCELERATE_CPU_AFFINITY=1 WANDB_MODE=offline torchrun --nproc_per_node="${NUM_GP
     --bf16 True \
     --run_name $RUN_NAME \
     --output_dir /data/input/jiafei/GroundedVLA/checkpoint/mar25_full_stage2_actiontoken_test \
-    --num_train_epochs 3 \
+    --num_train_epochs 20 \
     --per_device_train_batch_size 1 \
     --per_device_eval_batch_size 4 \
     --gradient_accumulation_steps 2 \
     --evaluation_strategy "no" \
     --save_strategy "steps" \
-    --save_steps 1000 \
+    --save_steps 1 \
     --save_total_limit 1 \
-    --learning_rate 1e-5 \
+    --learning_rate 2e-5 \
     --weight_decay 0. \
     --warmup_ratio 0.03 \
     --lr_scheduler_type "cosine" \
