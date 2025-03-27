@@ -3711,19 +3711,22 @@ def train(attn_implementation=None):
     trainer = LLaVATrainer(model=model, tokenizer=tokenizer, args=training_args, **data_module)
     import subprocess
     from transformers import TrainerCallback
-
+    import os 
     class GCSCheckpointCallback(TrainerCallback):
         def __init__(self, local_dir: str, gcs_path: str):
             self.local_dir = local_dir
             self.gcs_path = gcs_path
 
         def on_save(self, args, state, control, **kwargs):
-            # Only run the upload on rank 0
-            if getattr(args, "local_rank", 0) == 0:
-                rank0_print(f"Uploading checkpoint (step {state.global_step}) from {self.local_dir} to {self.gcs_path}...")
-                subprocess.run(["gsutil", "-m", "cp", "-r", self.local_dir, self.gcs_path])
+            # If local_rank is not available, assume rank 0.
+            rank = getattr(args, "local_rank", 0)
+            if rank == 0:
+                if os.path.exists(self.local_dir) and os.listdir(self.local_dir):
+                    rank0_print(f"Uploading checkpoint (step {state.global_step}) from {self.local_dir} to {self.gcs_path}...")
+                    subprocess.run(["gsutil", "-m", "cp", "-r", self.local_dir, self.gcs_path])
+                else:
+                    rank0_print(f"Checkpoint directory {self.local_dir} does not exist or is empty. Skipping upload.")
             return control
-
 
     # Compute the GCS output directory by replacing the local base path with the GCS bucket path.
     # For example, replace "/data/input/jiafei/GroundedVLA" with "gs://vision-jiafeid"
