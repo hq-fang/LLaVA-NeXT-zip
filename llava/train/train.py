@@ -3747,6 +3747,8 @@ def train(attn_implementation=None):
 
                         checkpoint_dirs = sorted(checkpoint_dirs, key=extract_num)
 
+                        print(f"Current checkpoints are {checkpoint_dirs}")
+
                         # Step 3: Delete older checkpoints (keep only 1 most recent; new one will be uploaded)
                         to_delete = checkpoint_dirs[:-1] if len(checkpoint_dirs) >= 2 else []
                         for d in to_delete:
@@ -3773,7 +3775,8 @@ def train(attn_implementation=None):
 
 
     # Compute the GCS output directory by replacing the local base path.
-    gcs_output_dir = training_args.output_dir.replace("/data/input/jiafei/GroundedVLA", "gs://vision-jiafeid")
+    # gcs_output_dir = training_args.output_dir.replace("/data/input/jiafei/GroundedVLA", "gs://vision-jiafeid")
+    gcs_output_dir = "gs://vision-jiafeid/checkpoint"
 
     # Add the callback only if this process is the main one.
     if os.environ.get("RANK", "0") == "0":
