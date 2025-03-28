@@ -25,6 +25,8 @@ tasks:
     gsutil -m cp -r gs://vision-jiafeid/lmms-lab/llava-onevision-qwen2-7v-ov /data/input/jiafei/GroundedVLA/checkpoint/lmms-lab &&
     mkdir -p /data/input/jiafei/GroundedVLA/checkpoint/mar27_full_stage2_actiontoken &&
     gsutil -m cp -r gs://vision-jiafeid/checkpoint/mar27_full_stage2_actiontoken/checkpoint-1500 /data/input/jiafei/GroundedVLA/checkpoint/mar27_full_stage2_actiontoken &&
+    cd /data/input/jiafei/GroundedVLA && pwd && ls -la && ls -laR checkpoint/mar27_full_stage2_actiontoken &&
+    cd /data/input/jiafei/GroundedVLA/LLaVA-NeXT &&
     bash ./scripts/train/finetune_ov_distill_stage2_actiontoken.sh
   
   # datasets:
