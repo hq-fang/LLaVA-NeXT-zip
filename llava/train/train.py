@@ -3727,15 +3727,23 @@ def train(attn_implementation=None):
                     rank0_print(f"Preparing to upload checkpoint (step {state.global_step}) from {self.local_dir} to {self.gcs_path}...")
 
                     try:
-                        # Step 1: List existing remote checkpoints
-                        ls_result = subprocess.run(
-                            ["gsutil", "ls", self.gcs_path],
-                            capture_output=True,
-                            text=True,
-                            check=True,
-                        )
-                        remote_items = ls_result.stdout.strip().splitlines()
-                        checkpoint_dirs = [item for item in remote_items if "checkpoint-" in item]
+                        # Step 1: List existing remote checkpoints (if any)
+                        checkpoint_dirs = []
+                        try:
+                            ls_result = subprocess.run(
+                                ["gsutil", "ls", self.gcs_path],
+                                capture_output=True,
+                                text=True,
+                                check=True,
+                            )
+                            remote_items = ls_result.stdout.strip().splitlines()
+                            checkpoint_dirs = [item for item in remote_items if "checkpoint-" in item]
+                        except subprocess.CalledProcessError as e:
+                            if e.returncode == 1:
+                                rank0_print(f"GCS path {self.gcs_path} does not exist yet. No checkpoints to delete.")
+                            else:
+                                raise  # Other errors should still crash
+
 
                         # Step 2: Sort checkpoint dirs by their number
                         def extract_num(remote_dir):
