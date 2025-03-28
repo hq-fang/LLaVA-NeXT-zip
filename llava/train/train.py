@@ -3758,13 +3758,23 @@ def train(attn_implementation=None):
                                 check=True,
                             )
 
-                        # Step 4: Upload the new checkpoint directory
-                        rank0_print(f"Uploading checkpoint (step {state.global_step}) from {self.local_dir} to {self.gcs_path}...")
-                        subprocess.run(
-                            ["gsutil", "-m", "cp", "-r", self.local_dir, self.gcs_path],
-                            check=True,
-                        )
-                        rank0_print("Upload successful.")
+                        # Step 4: Upload only local folders with prefix "checkpoint-"
+                        checkpoint_subdirs = [
+                            os.path.join(self.local_dir, d)
+                            for d in os.listdir(self.local_dir)
+                            if d.startswith("checkpoint-") and os.path.isdir(os.path.join(self.local_dir, d))
+                        ]
+
+                        if checkpoint_subdirs:
+                            for subdir in checkpoint_subdirs:
+                                rank0_print(f"Uploading {subdir} to {self.gcs_path}...")
+                                subprocess.run(
+                                    ["gsutil", "-m", "cp", "-r", subdir, self.gcs_path],
+                                    check=True,
+                                )
+                            rank0_print("All checkpoint folders uploaded successfully.")
+                        else:
+                            rank0_print(f"No checkpoint folders found in {self.local_dir}. Skipping upload.")
 
                     except Exception as e:
                         rank0_print(f"Error during GCS upload or cleanup: {e}")
@@ -3775,8 +3785,8 @@ def train(attn_implementation=None):
 
 
     # Compute the GCS output directory by replacing the local base path.
-    # gcs_output_dir = training_args.output_dir.replace("/data/input/jiafei/GroundedVLA", "gs://vision-jiafeid")
-    gcs_output_dir = "gs://vision-jiafeid/checkpoint"
+    gcs_output_dir = training_args.output_dir.replace("/data/input/jiafei/GroundedVLA", "gs://vision-jiafeid")
+    # gcs_output_dir = "gs://vision-jiafeid/checkpoint"
 
     # Add the callback only if this process is the main one.
     if os.environ.get("RANK", "0") == "0":
