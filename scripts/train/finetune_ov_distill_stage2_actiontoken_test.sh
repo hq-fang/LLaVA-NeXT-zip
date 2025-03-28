@@ -101,7 +101,7 @@ ACCELERATE_CPU_AFFINITY=1 WANDB_MODE=offline torchrun --nproc_per_node="${NUM_GP
     --mm_patch_merge_type spatial_unpad \
     --bf16 True \
     --run_name $RUN_NAME \
-    --output_dir /data/input/jiafei/GroundedVLA/checkpoint/mar25_full_stage2_actiontoken_test \
+    --output_dir /data/input/jiafei/GroundedVLA/checkpoint/mar25_full_stage2_actiontoken_test_save \
     --num_train_epochs 20 \
     --per_device_train_batch_size 1 \
     --per_device_eval_batch_size 4 \
