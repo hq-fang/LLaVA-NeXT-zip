@@ -28,7 +28,7 @@ export PORT=29500
 #ADDR="127.0.0.1"
 #PORT="29501"
 #PORT=$(python -c 'import socket; s=socket.socket(); s.bind(("", 0)); print(s.getsockname()[1]); s.close()')
-NNODES=32
+NNODES=48
 NUM_GPUS=8
 export CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7
 export LD_LIBRARY_PATH="/var/lib/tcpxo/lib64:${LD_LIBRARY_PATH}"
@@ -101,16 +101,16 @@ ACCELERATE_CPU_AFFINITY=1 WANDB_MODE=offline torchrun --nproc_per_node="${NUM_GP
     --mm_patch_merge_type spatial_unpad \
     --bf16 True \
     --run_name $RUN_NAME \
-    --output_dir /data/input/jiafei/GroundedVLA/checkpoint/mar25_full_stage2_actiontoken \
+    --output_dir /data/input/jiafei/GroundedVLA/checkpoint/mar27_full_stage2_actiontoken \
     --num_train_epochs 1 \
     --per_device_train_batch_size 1 \
     --per_device_eval_batch_size 4 \
     --gradient_accumulation_steps 2 \
     --evaluation_strategy "no" \
     --save_strategy "steps" \
-    --save_steps 1 \
+    --save_steps 500 \
     --save_total_limit 1 \
-    --learning_rate 2e-5 \
+    --learning_rate 3e-5 \
     --weight_decay 0. \
     --warmup_ratio 0.03 \
     --lr_scheduler_type "cosine" \
