@@ -110,7 +110,7 @@ tasks:
     value: "1"
   resources:
     gpuCount: 8
-    sharedMemory: 5000GiB
+    sharedMemory: 512GiB
   context:
     priority: high
     preemptible: true
