@@ -22,7 +22,7 @@ tasks:
     pip install fsspec google-cloud-storage &&
     pip install gcsfs &&
     mkdir -p /data/input/jiafei/GroundedVLA/LLaVA-NeXT/llava-onevision-qwen2-7v-ov &&
-    gsutil -m cp -r gs://vision-jiafeid/lmms-lab/llava-onevision-qwen2-7v-ov /data/input/jiafei/GroundedVLA/LLaVA-NeXT/llava-onevision-qwen2-7v-ov/ &&
+    gsutil -m cp -r gs://vision-jiafeid/lmms-lab/llava-onevision-qwen2-7v-ov /data/input/jiafei/GroundedVLA/checkpoint/lmms-lab/llava-onevision-qwen2-7v-ov &&
     bash ./scripts/train/finetune_ov_distill_stage2_actiontoken.sh
   
   # datasets:
