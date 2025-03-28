@@ -21,7 +21,7 @@ tasks:
     pip install flash-attn==2.5.7 &&
     pip install fsspec google-cloud-storage &&
     pip install gcsfs &&
-    mkdir /data/input/jiafei/GroundedVLA/checkpoint/mar25_full_stage2_actiontoken_test &&
+    mkdir -p /data/input/jiafei/GroundedVLA/checkpoint/mar25_full_stage2_actiontoken_test &&
     bash ./scripts/train/finetune_ov_distill_stage2_actiontoken_test.sh &&
     gsutil -m cp -r /data/input/jiafei/GroundedVLA/checkpoint/mar25_full_stage2_actiontoken_test gs://vision-jiafeid/checkpoint/mar25_full_stage2_actiontoken_test
   

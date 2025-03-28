@@ -3724,16 +3724,10 @@ def train(attn_implementation=None):
             # Only run on main process.
             if getattr(args, "local_rank", 0) in [0, -1]:
                 if os.path.isdir(self.local_dir) and os.listdir(self.local_dir):
-                    rank0_print(f"Uploading checkpoint (step {state.global_step}) from {self.local_dir} to {self.gcs_path}...")
-                    try:
-                        # Upload the entire local checkpoint directory to remote.
-                        subprocess.run(
-                            ["gsutil", "-m", "cp", "-r", self.local_dir, self.gcs_path],
-                            check=True,
-                        )
-                        rank0_print("Upload successful.")
+                    rank0_print(f"Preparing to upload checkpoint (step {state.global_step}) from {self.local_dir} to {self.gcs_path}...")
 
-                        # Now list remote contents and clean up older checkpoints.
+                    try:
+                        # Step 1: List existing remote checkpoints
                         ls_result = subprocess.run(
                             ["gsutil", "ls", self.gcs_path],
                             capture_output=True,
@@ -3741,34 +3735,41 @@ def train(attn_implementation=None):
                             check=True,
                         )
                         remote_items = ls_result.stdout.strip().splitlines()
-                        # Filter for checkpoint directories. Assumes names contain "checkpoint-"
                         checkpoint_dirs = [item for item in remote_items if "checkpoint-" in item]
-                        if checkpoint_dirs:
-                            # Sort by the numeric value in the directory name.
-                            def extract_num(remote_dir):
-                                # Expected format: .../checkpoint-<num>/
-                                base = remote_dir.rstrip("/").split("/")[-1]
-                                try:
-                                    return int(base.replace("checkpoint-", ""))
-                                except Exception:
-                                    return -1
-                            checkpoint_dirs = sorted(checkpoint_dirs, key=extract_num)
-                            latest = checkpoint_dirs[-1]
-                            # Delete all older checkpoints.
-                            to_delete = checkpoint_dirs[:-1]
-                            for d in to_delete:
-                                rank0_print(f"Deleting old remote checkpoint: {d}")
-                                subprocess.run(
-                                    ["gsutil", "-m", "rm", "-r", d],
-                                    check=True,
-                                )
-                        else:
-                            rank0_print("No checkpoint directories found on remote to clean up.")
+
+                        # Step 2: Sort checkpoint dirs by their number
+                        def extract_num(remote_dir):
+                            base = remote_dir.rstrip("/").split("/")[-1]
+                            try:
+                                return int(base.replace("checkpoint-", ""))
+                            except Exception:
+                                return -1
+
+                        checkpoint_dirs = sorted(checkpoint_dirs, key=extract_num)
+
+                        # Step 3: Delete older checkpoints (keep only 1 most recent; new one will be uploaded)
+                        to_delete = checkpoint_dirs[:-1] if len(checkpoint_dirs) >= 2 else []
+                        for d in to_delete:
+                            rank0_print(f"Deleting old remote checkpoint: {d}")
+                            subprocess.run(
+                                ["gsutil", "-m", "rm", "-r", d],
+                                check=True,
+                            )
+
+                        # Step 4: Upload the new checkpoint directory
+                        rank0_print(f"Uploading checkpoint (step {state.global_step}) from {self.local_dir} to {self.gcs_path}...")
+                        subprocess.run(
+                            ["gsutil", "-m", "cp", "-r", self.local_dir, self.gcs_path],
+                            check=True,
+                        )
+                        rank0_print("Upload successful.")
+
                     except Exception as e:
                         rank0_print(f"Error during GCS upload or cleanup: {e}")
                 else:
                     rank0_print(f"Checkpoint directory {self.local_dir} does not exist or is empty. Skipping upload.")
             return control
+
 
 
     # Compute the GCS output directory by replacing the local base path.

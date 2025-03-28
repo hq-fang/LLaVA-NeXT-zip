@@ -108,7 +108,7 @@ ACCELERATE_CPU_AFFINITY=1 WANDB_MODE=offline torchrun --nproc_per_node="${NUM_GP
     --gradient_accumulation_steps 2 \
     --evaluation_strategy "no" \
     --save_strategy "steps" \
-    --save_steps 1000 \
+    --save_steps 1 \
     --save_total_limit 1 \
     --learning_rate 2e-5 \
     --weight_decay 0. \
