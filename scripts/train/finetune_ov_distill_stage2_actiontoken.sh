@@ -81,7 +81,7 @@ PREV_STAGE_CHECKPOINT="/data/input/jiafei/GroundedVLA/checkpoint/lmms-lab/llava-
 echo "PREV_STAGE_CHECKPOINT: ${PREV_STAGE_CHECKPOINT}"
 echo "MID_RUN_NAME: ${RUN_NAME}"
 
-ACCELERATE_CPU_AFFINITY=1 WANDB_MODE=offline torchrun --nproc_per_node="${NUM_GPUS}" --nnodes="${NNODES}" --node_rank="${RANK}" --master_addr="${ADDR}" --master_port="${PORT}" \
+ACCELERATE_CPU_AFFINITY=1 WANDB_API_KEY=b0161ce9ee3d3f5a6a2b28ffffcd098211e8376d torchrun --nproc_per_node="${NUM_GPUS}" --nnodes="${NNODES}" --node_rank="${RANK}" --master_addr="${ADDR}" --master_port="${PORT}" \
     /data/input/jiafei/GroundedVLA/LLaVA-NeXT/llava/train/train_mem.py \
     --deepspeed /data/input/jiafei/GroundedVLA/LLaVA-NeXT/scripts/zero2.json \
     --model_name_or_path $PREV_STAGE_CHECKPOINT \
@@ -119,7 +119,7 @@ ACCELERATE_CPU_AFFINITY=1 WANDB_MODE=offline torchrun --nproc_per_node="${NUM_GP
     --tf32 True \
     --model_max_length 32768 \
     --gradient_checkpointing True \
-    --dataloader_num_workers 4 \
+    --dataloader_num_workers 8 \
     --lazy_preprocess True \
     --report_to wandb \
     --torch_compile True \
