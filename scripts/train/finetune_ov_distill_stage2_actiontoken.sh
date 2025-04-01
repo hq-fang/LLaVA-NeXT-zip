@@ -14,7 +14,7 @@ LLM_VERSION_CLEAN="${LLM_VERSION//\//_}"
 VISION_MODEL_VERSION="google/siglip-so400m-patch14-384"
 VISION_MODEL_VERSION_CLEAN="${VISION_MODEL_VERSION//\//_}"
 #export NCCL_IB_HCA=^=mlx5_bond_0
-#export NCCL_DEBUG=INFO
+export NCCL_DEBUG=INFO
 
 ############### Pretrain ################
 
