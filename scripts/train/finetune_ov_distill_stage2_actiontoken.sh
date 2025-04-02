@@ -111,7 +111,7 @@ ACCELERATE_CPU_AFFINITY=1 WANDB_API_KEY=b0161ce9ee3d3f5a6a2b28ffffcd098211e8376d
     --save_strategy "steps" \
     --save_steps 500 \
     --save_total_limit 1 \
-    --learning_rate 3e-5 \
+    --learning_rate 1e-5 \
     --weight_decay 0. \
     --warmup_ratio 0.03 \
     --lr_scheduler_type "cosine" \
