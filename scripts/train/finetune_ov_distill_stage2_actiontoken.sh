@@ -28,7 +28,7 @@ export PORT=29500
 #ADDR="127.0.0.1"
 #PORT="29501"
 #PORT=$(python -c 'import socket; s=socket.socket(); s.bind(("", 0)); print(s.getsockname()[1]); s.close()')
-NNODES=48
+NNODES=16
 NUM_GPUS=8
 export CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7
 export LD_LIBRARY_PATH="/var/lib/tcpxo/lib64:${LD_LIBRARY_PATH}"
@@ -102,7 +102,7 @@ ACCELERATE_CPU_AFFINITY=1 WANDB_API_KEY=b0161ce9ee3d3f5a6a2b28ffffcd098211e8376d
     --mm_patch_merge_type spatial_unpad \
     --bf16 True \
     --run_name $RUN_NAME \
-    --output_dir /data/input/jiafei/GroundedVLA/checkpoint/mar27_full_stage2_actiontoken \
+    --output_dir /data/input/jiafei/GroundedVLA/checkpoint/apr1_full_stage2_actiontoken \
     --num_train_epochs 1 \
     --per_device_train_batch_size 1 \
     --per_device_eval_batch_size 4 \
