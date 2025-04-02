@@ -7,11 +7,11 @@ datasets:
     sampling_strategy: "random:100%"
   - json_path: gs://vision-jiafeid/json/line-1m.json
     sampling_strategy: "random:100%"
-  - json_path: gs://vision-jiafeid/json/reasoning-depthsanity/fractal20220817_data.json
+  - json_path: gs://vision-jiafeid/json/reasoning/fractal20220817_data.json
     sampling_strategy: "random:100%"
-  - json_path: gs://vision-jiafeid/json/reasoning-depthsanity/bridge_dataset.json
+  - json_path: gs://vision-jiafeid/json/reasoning/bridge_dataset.json
     sampling_strategy: "random:100%"
-  - json_path: gs://vision-jiafeid/json/reasoning-depthsanity/bc_z.json
+  - json_path: gs://vision-jiafeid/json/reasoning/bc_z.json
     sampling_strategy: "random:100%"
   # - json_path: gs://vision-jiafeid/json/reasoning-actiontoken/fractal20220817_data.json
   #   sampling_strategy: "random:100%"
